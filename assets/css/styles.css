@@ -43,17 +43,17 @@ body {
 }
 
 .topbar__inner {
-  width: min(1400px, 98vw);
+  width: min(1600px, 99vw);
   margin: 0 auto;
-  padding: 1.2rem 0;
+  padding: 1.35rem 0;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.1rem;
 }
 
 .cos-logo {
-  width: 187px;
-  height: 187px;
+  width: 160px;
+  height: 160px;
   object-fit: contain;
   flex: 0 0 auto;
 }
@@ -61,22 +61,22 @@ body {
 .topbar__text h1 {
   margin: 0;
   color: var(--black);
-  font-size: clamp(1.7rem, 2.8vw, 2.5rem);
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
   line-height: 1.05;
   font-weight: 800;
 }
 
 .topbar__text p {
-  margin: .35rem 0 0;
+  margin: .4rem 0 0;
   color: var(--muted);
-  font-size: 1.05rem;
+  font-size: 1.08rem;
 }
 
 .viewer-layout {
-  width: min(1400px, 98vw);
+  width: min(1600px, 99vw);
   margin: 1.5rem auto 2rem;
   display: grid;
-  grid-template-columns: minmax(0, 1.75fr) minmax(320px, .8fr);
+  grid-template-columns: minmax(0, 2.1fr) minmax(340px, .8fr);
   gap: 1.5rem;
   align-items: start;
 }
@@ -118,13 +118,13 @@ body {
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
-  min-height: min(72vh, 780px);
+  min-height: min(82vh, 920px);
 }
 
 .photo-stage img {
   width: 100%;
   height: 100%;
-  max-height: min(72vh, 780px);
+  max-height: min(82vh, 920px);
   object-fit: contain;
   display: block;
   background: transparent;
@@ -141,8 +141,8 @@ body {
 }
 
 .nav-btn {
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   border-radius: 999px;
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.96);
@@ -283,11 +283,11 @@ button.success {
   }
 
   .photo-stage {
-    min-height: min(52vh, 560px);
+    min-height: min(62vh, 700px);
   }
 
   .photo-stage img {
-    max-height: min(52vh, 560px);
+    max-height: min(62vh, 700px);
   }
 }
 
@@ -297,10 +297,8 @@ button.success {
   }
 
   .cos-logo {
-    width: 136px;
-    height: 136px;
-    object-fit: contain;
-    flex: 0 0 auto;
+    width: 92px;
+    height: 92px;
   }
 
   .actions {
@@ -308,11 +306,11 @@ button.success {
   }
 
   .photo-stage {
-    min-height: 50vh;
+    min-height: 58vh;
   }
 
   .photo-stage img {
-    max-height: 50vh;
+    max-height: 58vh;
   }
 
   .nav-btn {
