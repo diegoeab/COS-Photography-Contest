@@ -9,7 +9,7 @@
   <body>
     <header class="container">
       <h1>COS Photography Contest</h1>
-      <p>Select your top 3 photos (2 pts for #1, 1 pt for #2 and #3).</p>
+      <p>Click 3 photos in order. First click gives 2 points. Second and third give 1 point each.</p>
       <nav>
         <a href="./index.html" aria-current="page">Vote</a>
         <a href="./results.html">Results</a>
@@ -25,25 +25,9 @@
 
       <section class="vote-panel">
         <h2>Your selection</h2>
-        <form id="vote-form">
-          <label>
-            Favorite photo (#1, 2 points)
-            <select id="favorite" required></select>
-          </label>
-
-          <label>
-            Second favorite (#2, 1 point)
-            <select id="second" required></select>
-          </label>
-
-          <label>
-            Third favorite (#3, 1 point)
-            <select id="third" required></select>
-          </label>
-
-          <button type="submit">Submit vote</button>
-        </form>
-        <p class="help">Only 1 vote per browser is allowed (local token).</p>
+        <div id="selection-summary" class="help">No photos selected yet.</div>
+        <button id="submit-vote" type="button">Submit vote</button>
+        <p class="help">Only 1 vote per browser is allowed (local token). Click a selected photo again to unselect it.</p>
       </section>
     </main>
 
