@@ -67,13 +67,13 @@
 
     const p = currentPhoto();
     mainPhotoEl.src = p.image_url;
-    mainPhotoEl.alt = p.title;
+    mainPhotoEl.alt = "";
     photoTitleEl.textContent = `Photo ${currentIndex + 1}`;
-    photoCounterEl.textContent = `Photo ${currentIndex + 1} of ${photos.length}`;;
+    photoCounterEl.textContent = `Photo ${currentIndex + 1} of ${photos.length}`;
 
     const idx = selected.indexOf(p.id);
     if (idx >= 0) {
-      pickBtn.textContent = `Already in Top 3 (#${idx + 1})`;
+      pickBtn.textContent = `Already in Top 3 (${idx + 1})`;
       pickBtn.disabled = true;
       removeBtn.disabled = false;
     } else {
@@ -86,16 +86,15 @@
   function slotHTML(rank, photo) {
     if (!photo) {
       return `
-        <span class="slot-rank">#${rank}</span>
+        <span class="slot-rank">${rank === 1 ? "1st" : rank === 2 ? "2nd" : "3rd"}</span>
         <div class="slot-empty">No photo selected</div>
       `;
     }
 
     return `
-      <span class="slot-rank">#${rank}</span>
+      <span class="slot-rank">${rank === 1 ? "1st" : rank === 2 ? "2nd" : "3rd"}</span>
       <div class="slot-item">
-        <img src="${photo.image_url}" alt="${photo.title}" />
-        <p class="slot-title">${photo.title}</p>
+        <img src="${photo.image_url}" alt="" />
       </div>
     `;
   }
@@ -139,7 +138,10 @@
     }
 
     selected.push(p.id);
-    setStatus(`Added as #${selected.length}: ${p.title}`, "success");
+    setStatus(
+      `Added as ${selected.length === 1 ? "1st" : selected.length === 2 ? "2nd" : "3rd"} photo.`,
+      "success"
+    );
     renderViewer();
     renderTop3();
   }
@@ -155,7 +157,7 @@
     }
 
     selected.splice(idx, 1);
-    setStatus(`Removed: ${p.title}`, "success");
+    setStatus("Photo removed from your Top 3.", "success");
     renderViewer();
     renderTop3();
   }
