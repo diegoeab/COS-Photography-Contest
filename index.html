@@ -10,16 +10,18 @@
     <header class="topbar">
       <div class="topbar__inner">
         <img src="./assets/img/cos-logo.png" alt="COS logo" class="cos-logo" />
-        <div>
+        <div class="topbar__text">
           <h1>COS Photography Contest</h1>
-          <p>View photos in full screen, then choose your Top 3.</p>
+          <p>View photos full screen, then choose your Top 3.</p>
         </div>
       </div>
     </header>
 
     <main class="viewer-layout">
       <section class="viewer" aria-label="Photo viewer">
-        <p id="status" class="status" aria-live="polite"></p>
+        <div class="viewer__header">
+          <p id="status" class="status" aria-live="polite"></p>
+        </div>
 
         <div class="photo-stage">
           <button id="prev-btn" class="nav-btn nav-btn--left" aria-label="Previous photo">‹</button>
@@ -40,8 +42,10 @@
       </section>
 
       <aside class="sidebar" aria-label="Your top 3">
-        <h3>Your Top 3</h3>
-        <p class="muted">Order matters: #1 gets 2 points, #2 and #3 get 1 point.</p>
+        <div class="sidebar__head">
+          <h3>Your Top 3</h3>
+          <p class="muted">Order matters: #1 gets 2 points, #2 and #3 get 1 point.</p>
+        </div>
 
         <div id="top3-list" class="top3-list">
           <div class="slot" data-rank="1">
@@ -58,9 +62,7 @@
           </div>
         </div>
 
-        <p class="muted small">
-          You can submit only once per browser.
-        </p>
+        <p class="muted small">You can submit only once per browser.</p>
       </aside>
     </main>
 
