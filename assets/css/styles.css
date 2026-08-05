@@ -14,8 +14,9 @@
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
   --shadow-hover: 0 14px 34px rgba(0, 0, 0, 0.1);
   --font-main: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  --header-h: 220px;
 }
+
+/* ---------- Reset básico ---------- */
 
 * {
   box-sizing: border-box;
@@ -27,7 +28,8 @@ html {
 
 body {
   margin: 0;
-  padding-top: var(--header-h);
+  /* Dejamos espacio para el header fijo (ajusta si hace falta) */
+  padding-top: 260px;
   font-family: var(--font-main);
   background: var(--bg);
   color: var(--text);
@@ -35,8 +37,10 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* ---------- Header fijo arriba ---------- */
+
 .topbar {
-  position: fixed;
+  position: fixed;      /* SIEMPRE fijo al viewport [web:9][web:10] */
   top: 0;
   left: 0;
   width: 100%;
@@ -53,7 +57,6 @@ body {
   display: flex;
   align-items: center;
   gap: 1.1rem;
-  min-height: var(--header-h);
 }
 
 .cos-logo {
@@ -77,6 +80,8 @@ body {
   font-size: 1.08rem;
 }
 
+/* ---------- Layout principal ---------- */
+
 .viewer-layout {
   width: min(1600px, 99vw);
   margin: 1.5rem auto 2rem;
@@ -98,11 +103,13 @@ body {
   padding: 1rem;
 }
 
+/* Quitamos sticky del panel lateral para que no “suba/baje” solo */
 .sidebar {
   padding: 1rem;
-  position: sticky;
-  top: 20px;
+  position: static;
 }
+
+/* ---------- Cabeceras internas ---------- */
 
 .viewer__header,
 .sidebar__head {
@@ -113,6 +120,8 @@ body {
   min-height: 1.2rem;
   margin: 0;
 }
+
+/* ---------- Foto principal ---------- */
 
 .photo-stage {
   position: relative;
@@ -136,6 +145,8 @@ body {
   image-rendering: auto;
   image-orientation: from-image;
 }
+
+/* ---------- Flechas debajo de la foto ---------- */
 
 .photo-nav {
   display: flex;
@@ -173,6 +184,8 @@ body {
   margin-left: auto;
 }
 
+/* ---------- Texto bajo la foto ---------- */
+
 .photo-meta {
   margin-top: .7rem;
   padding: 0 .15rem;
@@ -183,6 +196,8 @@ body {
   font-size: 1rem;
   color: var(--muted);
 }
+
+/* ---------- Botones de acciones ---------- */
 
 .actions {
   display: grid;
@@ -220,6 +235,8 @@ button.success {
   border-color: var(--green);
   color: var(--white);
 }
+
+/* ---------- Panel lateral Top 3 ---------- */
 
 .sidebar h3 {
   margin: 0;
@@ -278,11 +295,9 @@ button.success {
   margin-top: 1rem;
 }
 
-@media (max-width: 980px) {
-  :root {
-    --header-h: 190px;
-  }
+/* ---------- Responsivo ---------- */
 
+@media (max-width: 980px) {
   .viewer-layout {
     grid-template-columns: 1fr;
   }
@@ -301,8 +316,8 @@ button.success {
 }
 
 @media (max-width: 640px) {
-  :root {
-    --header-h: 160px;
+  body {
+    padding-top: 200px; /* header algo más bajo en móvil */
   }
 
   .topbar__inner {
@@ -310,8 +325,8 @@ button.success {
   }
 
   .cos-logo {
-    width: 92px;
-    height: 92px;
+    width: 120px;
+    height: 120px;
   }
 
   .actions {
