@@ -7,27 +7,58 @@
     <link rel="stylesheet" href="./assets/css/styles.css" />
   </head>
   <body>
-    <header class="container">
-      <h1>COS Photography Contest</h1>
-      <p>Click 3 photos in order. First click gives 2 points. Second and third give 1 point each.</p>
-      <nav>
-        <a href="./index.html" aria-current="page">Vote</a>
-      </nav>
+    <header class="topbar">
+      <div class="topbar__inner">
+        <h1>COS Photography Contest</h1>
+        <p>View photos in full screen, then choose your Top 3.</p>
+      </div>
     </header>
 
-    <main class="container">
-      <section>
-        <h2>Gallery</h2>
+    <main class="viewer-layout">
+      <section class="viewer" aria-label="Photo viewer">
         <p id="status" class="status" aria-live="polite"></p>
-        <div id="gallery" class="gallery"></div>
+
+        <div class="photo-stage">
+          <button id="prev-btn" class="nav-btn nav-btn--left" aria-label="Previous photo">‹</button>
+          <img id="main-photo" src="" alt="" />
+          <button id="next-btn" class="nav-btn nav-btn--right" aria-label="Next photo">›</button>
+        </div>
+
+        <div class="photo-meta">
+          <h2 id="photo-title">Loading...</h2>
+          <p id="photo-counter" class="muted"></p>
+        </div>
+
+        <div class="actions">
+          <button id="pick-btn" type="button">Add to Top 3</button>
+          <button id="remove-btn" type="button" class="secondary">Remove from Top 3</button>
+          <button id="submit-vote" type="button" class="success">Submit Vote</button>
+        </div>
       </section>
 
-      <section class="vote-panel">
-        <h2>Your selection</h2>
-        <div id="selection-summary" class="help">No photos selected yet.</div>
-        <button id="submit-vote" type="button">Submit vote</button>
-        <p class="help">Only 1 vote per browser is allowed (local token). Click a selected photo again to unselect it.</p>
-      </section>
+      <aside class="sidebar" aria-label="Your top 3">
+        <h3>Your Top 3</h3>
+        <p class="muted">Order matters: #1 gets 2 points, #2 and #3 get 1 point.</p>
+
+        <div id="top3-list" class="top3-list">
+          <div class="slot" data-rank="1">
+            <span class="slot-rank">#1</span>
+            <div class="slot-empty">No photo selected</div>
+          </div>
+          <div class="slot" data-rank="2">
+            <span class="slot-rank">#2</span>
+            <div class="slot-empty">No photo selected</div>
+          </div>
+          <div class="slot" data-rank="3">
+            <span class="slot-rank">#3</span>
+            <div class="slot-empty">No photo selected</div>
+          </div>
+        </div>
+
+        <p class="muted small">
+          You can submit only once per browser.
+        </p>
+      </aside>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
