@@ -4,21 +4,27 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Results | COS Photography Contest</title>
-    <link rel="stylesheet" href="./assets/css/styles.css" />
+    <link rel="stylesheet" href="./assets/css/styles.css?v=3" />
   </head>
   <body>
-    <header class="container">
-      <h1>Results</h1>
-      <p>Ranking by total points (2/1/1).</p>
-      <nav>
-        <a href="./index.html">Vote</a>
-        <a href="./results.html" aria-current="page">Results</a>
-      </nav>
+    <header class="topbar">
+      <div class="topbar__inner">
+        <img src="./assets/img/cos-logo.png" alt="COS logo" class="cos-logo" />
+        <div class="topbar__text">
+          <h1>Results</h1>
+          <p>Ranking by total points (2/1/1).</p>
+          <nav class="topbar__nav">
+            <a href="./index.html">Vote</a>
+            <a href="./results.html" aria-current="page">Results</a>
+          </nav>
+        </div>
+      </div>
     </header>
 
-    <main class="container">
+    <main class="results-main">
       <p id="status" class="status" aria-live="polite"></p>
-      <table>
+
+      <table class="results-table">
         <thead>
           <tr>
             <th>#</th>
