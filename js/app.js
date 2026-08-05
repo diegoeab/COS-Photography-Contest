@@ -1,10 +1,8 @@
 (function () {
   const statusEl = document.getElementById("status");
   const galleryEl = document.getElementById("gallery");
-  const formEl = document.getElementById("vote-form");
-  const favoriteEl = document.getElementById("favorite");
-  const secondEl = document.getElementById("second");
-  const thirdEl = document.getElementById("third");
+  const submitBtn = document.getElementById("submit-vote");
+  const summaryEl = document.getElementById("selection-summary");
 
   const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.SUPABASE_CONFIG || {};
   const hasSupabaseConfig =
@@ -14,6 +12,9 @@
   const supabase = hasSupabaseConfig
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     : null;
+
+  let photos = [];
+  let selected = [];
 
   function setStatus(msg, type = "info") {
     statusEl.textContent = msg;
@@ -36,30 +37,56 @@
     return res.json();
   }
 
-  function renderGallery(photos) {
-    galleryEl.innerHTML = photos
-      .map(
-        (p) => `
-        <article class="card">
+  function selectionRank(photoId) {
+    const idx = selected.indexOf(photoId);
+    return idx === -1 ? null : idx + 1;
+  }
+
+  function updateSummary() {
+    if (selected.length === 0) {
+      summaryEl.textContent = "No photos selected yet.";
+      return;
+    }
+    const lines = selected.map((id, i) => {
+      const p = photos.find((x) => x.id === id);
+      return `#${i + 1}: ${p ? p.title : id}`;
+    });
+    summaryEl.textContent = lines.join(" | ");
+  }
+
+  function renderGallery() {
+    galleryEl.innerHTML = photos.map((p) => {
+      const rank = selectionRank(p.id);
+      return `
+        <article class="card ${rank ? "selected" : ""}" data-photo-id="${p.id}">
           <img src="${p.image_url}" alt="${p.title}" loading="lazy" />
           <h3>${p.title}</h3>
           <p>ID: ${p.id}</p>
+          ${rank ? `<span class="rank-badge">Pick #${rank}</span>` : ""}
         </article>
-      `
-      )
-      .join("");
-  }
+      `;
+    }).join("");
 
-  function populateSelect(select, photos) {
-    select.innerHTML = `<option value="">Select a photo</option>` +
-      photos.map((p) => `<option value="${p.id}">${p.title} (${p.id})</option>`).join("");
-  }
+    galleryEl.querySelectorAll(".card").forEach((card) => {
+      card.addEventListener("click", () => {
+        const photoId = card.dataset.photoId;
+        const existing = selected.indexOf(photoId);
 
-  function validateSelection(favorite, second, third) {
-    if (!favorite || !second || !third) return "You must choose 3 photos.";
-    const set = new Set([favorite, second, third]);
-    if (set.size !== 3) return "All 3 selections must be different.";
-    return null;
+        if (existing >= 0) {
+          selected.splice(existing, 1);
+        } else {
+          if (selected.length >= 3) {
+            setStatus("You can only select 3 photos.", "warn");
+            return;
+          }
+          selected.push(photoId);
+        }
+
+        setStatus("", "info");
+        renderGallery();
+        updateSummary();
+      });
+    });
   }
 
   async function submitVote(payload) {
@@ -74,27 +101,21 @@
 
   async function init() {
     try {
-      const photos = await loadPhotos();
-      renderGallery(photos);
-      [favoriteEl, secondEl, thirdEl].forEach((s) => populateSelect(s, photos));
+      photos = await loadPhotos();
+      renderGallery();
+      updateSummary();
 
       if (!hasSupabaseConfig) {
         setStatus("Demo mode: configure Supabase in js/config.js to store real votes.", "warn");
       }
 
-      formEl.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const favorite = favoriteEl.value;
-        const second = secondEl.value;
-        const third = thirdEl.value;
-
-        const validationError = validateSelection(favorite, second, third);
-        if (validationError) {
-          setStatus(validationError, "error");
+      submitBtn.addEventListener("click", async () => {
+        if (selected.length !== 3) {
+          setStatus("Select exactly 3 photos before submitting.", "error");
           return;
         }
 
+        const [favorite, second, third] = selected;
         const voterToken = getVoterToken();
 
         try {
@@ -105,7 +126,9 @@
             third_id: third
           });
           setStatus("Vote submitted successfully.", "success");
-          formEl.reset();
+          selected = [];
+          renderGallery();
+          updateSummary();
         } catch (err) {
           const message = err?.message || "Could not submit vote.";
           setStatus(message, "error");
