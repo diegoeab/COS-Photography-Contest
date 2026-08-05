@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Results - COS Photography Contest</title>
+    <link rel="stylesheet" href="./assets/css/styles.css" />
+    <style>
+      .admin-wrap { width: min(1100px, 94vw); margin: 2rem auto; }
+      .panel { background: #131a2a; border: 1px solid #263252; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
+      .row { display: flex; gap: .5rem; flex-wrap: wrap; }
+      input[type="password"] {
+        flex: 1;
+        min-width: 260px;
+        background: #0b1020;
+        border: 1px solid #2a355d;
+        color: #edf2ff;
+        border-radius: 8px;
+        padding: .65rem .75rem;
+      }
+      table { width: 100%; border-collapse: collapse; background: #131a2a; border-radius: 12px; overflow: hidden; }
+      th, td { text-align: left; padding: .75rem; border-bottom: 1px solid #253056; }
+      .hidden { display: none; }
+      .muted { color: #a8b3d1; }
+    </style>
+  </head>
+  <body>
+    <main class="admin-wrap">
+      <h1>Admin Results</h1>
+      <p class="muted">Private page for organizers.</p>
+
+      <section class="panel" id="login-panel">
+        <h2>Enter admin password</h2>
+        <div class="row">
+          <input id="admin-password" type="password" placeholder="Password" />
+          <button id="unlock-btn" type="button">Unlock</button>
+        </div>
+        <p id="login-status" class="status" aria-live="polite"></p>
+      </section>
+
+      <section class="panel hidden" id="results-panel">
+        <div class="row" style="justify-content: space-between; align-items: center;">
+          <h2 style="margin:0;">Ranking</h2>
+          <button id="refresh-btn" type="button">Refresh</button>
+        </div>
+        <p id="results-status" class="status" aria-live="polite"></p>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Photo</th>
+              <th>Points</th>
+            </tr>
+          </thead>
+          <tbody id="results-body"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/admin.js"></script>
+  </body>
+</html>
