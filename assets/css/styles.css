@@ -28,7 +28,7 @@ html {
 
 body {
   margin: 0;
-  /* Dejamos espacio para el header fijo (ajusta si hace falta) */
+  /* Deja espacio para el header fijo */
   padding-top: 260px;
   font-family: var(--font-main);
   background: var(--bg);
@@ -40,7 +40,7 @@ body {
 /* ---------- Header fijo arriba ---------- */
 
 .topbar {
-  position: fixed;      /* SIEMPRE fijo al viewport [web:9][web:10] */
+  position: fixed; /* Fijo al viewport */
   top: 0;
   left: 0;
   width: 100%;
@@ -80,7 +80,27 @@ body {
   font-size: 1.08rem;
 }
 
-/* ---------- Layout principal ---------- */
+/* Nav del header (sobre todo para results.html) */
+.topbar__nav {
+  margin-top: .55rem;
+  display: flex;
+  gap: 1rem;
+  font-size: .98rem;
+}
+
+.topbar__nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.topbar__nav a[aria-current="page"] {
+  color: var(--black);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* ---------- Layout principal VOTING (index.html) ---------- */
 
 .viewer-layout {
   width: min(1600px, 99vw);
@@ -103,7 +123,7 @@ body {
   padding: 1rem;
 }
 
-/* Quitamos sticky del panel lateral para que no “suba/baje” solo */
+/* Panel lateral no sticky para evitar movimiento raro */
 .sidebar {
   padding: 1rem;
   position: static;
@@ -295,6 +315,41 @@ button.success {
   margin-top: 1rem;
 }
 
+/* ---------- Layout RESULTADOS (results.html) ---------- */
+
+.results-main {
+  width: min(1600px, 99vw);
+  margin: 1.5rem auto 2rem;
+  background: var(--surface);
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 1.2rem 1.5rem 1.5rem;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: .98rem;
+}
+
+.results-table th,
+.results-table td {
+  padding: .6rem .8rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.results-table th {
+  background: var(--surface-soft);
+  font-weight: 700;
+}
+
+.results-table tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
 /* ---------- Responsivo ---------- */
 
 @media (max-width: 980px) {
@@ -312,6 +367,10 @@ button.success {
 
   .photo-stage img {
     max-height: min(62vh, 700px);
+  }
+
+  .results-main {
+    padding: 1rem;
   }
 }
 
