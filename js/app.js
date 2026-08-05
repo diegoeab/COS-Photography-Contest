@@ -175,12 +175,16 @@
     const voterToken = getVoterToken();
 
     try {
-      const { error } = await supabase.from("votes").insert({
+      const payload = {
         voter_token: voterToken,
         favorite_id: favorite,
         second_id: second,
         third_id: third
-      });
+      };
+
+      const { error } = await supabase
+        .from("votes")
+        .upsert(payload, { onConflict: "voter_token" });
 
       if (error) throw error;
 
@@ -196,7 +200,6 @@
   }
 
   function bindDom() {
-    // Fail-fast validation: throws explicit error if something is missing
     statusEl = must("status");
     mainPhotoEl = must("main-photo");
     photoTitleEl = must("photo-title");
@@ -228,7 +231,6 @@
         if (e.key === "ArrowRight") nextPhoto();
       });
     } catch (err) {
-      // If statusEl is not available yet, fallback to console + alert
       if (statusEl) {
         setStatus(err.message || "Error loading page.", "error");
       } else {
