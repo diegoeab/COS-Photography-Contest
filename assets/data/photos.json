@@ -1,0 +1,27 @@
+[
+  {
+    "id": "photo_001",
+    "title": "Sunrise on the Coast",
+    "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80"
+  },
+  {
+    "id": "photo_002",
+    "title": "Mountains at Sunset",
+    "image_url": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80"
+  },
+  {
+    "id": "photo_003",
+    "title": "City at Night",
+    "image_url": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1400&q=80"
+  },
+  {
+    "id": "photo_004",
+    "title": "Foggy Forest",
+    "image_url": "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1400&q=80"
+  },
+  {
+    "id": "photo_005",
+    "title": "Golden Desert",
+    "image_url": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1400&q=80"
+  }
+]
