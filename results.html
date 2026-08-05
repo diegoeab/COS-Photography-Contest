@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Results | COS Photography Contest</title>
+    <link rel="stylesheet" href="./assets/css/styles.css" />
+  </head>
+  <body>
+    <header class="container">
+      <h1>Results</h1>
+      <p>Ranking by total points (2/1/1).</p>
+      <nav>
+        <a href="./index.html">Vote</a>
+        <a href="./results.html" aria-current="page">Results</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <p id="status" class="status" aria-live="polite"></p>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Photo</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/results.js"></script>
+  </body>
+</html>
