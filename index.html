@@ -7,10 +7,16 @@
     <link rel="stylesheet" href="./assets/css/styles.css" />
   </head>
   <body>
+    <header class="brand-header">
+      <div class="brand-header__inner brand-header__inner--single">
+        <img src="./assets/img/cos-logo.png" alt="COS - Centre for Organismal Studies" class="brand-logo-single" />
+      </div>
+    </header>
+
     <header class="topbar">
       <div class="topbar__inner">
-        <h1>COS Photography Contest</h1>
-        <p>View photos in full screen, then choose your Top 3.</p>
+        <p class="kicker">COS Photography Contest</p>
+        <p>View photos full screen and pick your Top 3.</p>
       </div>
     </header>
 
@@ -55,14 +61,12 @@
           </div>
         </div>
 
-        <p class="muted small">
-          You can submit only once per browser.
-        </p>
+        <p class="muted small">You can submit only once per browser.</p>
       </aside>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./js/config.js"></script>
-    <script src="./js/app.js"></script>
+    <script src="./js/app.js?v=4"></script>
   </body>
 </html>
