@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>COS Photography Contest</title>
+    <link rel="stylesheet" href="./assets/css/styles.css" />
+  </head>
+  <body>
+    <header class="container">
+      <h1>COS Photography Contest</h1>
+      <p>Select your top 3 photos (2 pts for #1, 1 pt for #2 and #3).</p>
+      <nav>
+        <a href="./index.html" aria-current="page">Vote</a>
+        <a href="./results.html">Results</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section>
+        <h2>Gallery</h2>
+        <p id="status" class="status" aria-live="polite"></p>
+        <div id="gallery" class="gallery"></div>
+      </section>
+
+      <section class="vote-panel">
+        <h2>Your selection</h2>
+        <form id="vote-form">
+          <label>
+            Favorite photo (#1, 2 points)
+            <select id="favorite" required></select>
+          </label>
+
+          <label>
+            Second favorite (#2, 1 point)
+            <select id="second" required></select>
+          </label>
+
+          <label>
+            Third favorite (#3, 1 point)
+            <select id="third" required></select>
+          </label>
+
+          <button type="submit">Submit vote</button>
+        </form>
+        <p class="help">Only 1 vote per browser is allowed (local token).</p>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/app.js"></script>
+  </body>
+</html>
