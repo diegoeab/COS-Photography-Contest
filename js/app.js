@@ -1,23 +1,32 @@
 (function () {
   const statusEl = document.getElementById("status");
-  const galleryEl = document.getElementById("gallery");
+  const mainPhotoEl = document.getElementById("main-photo");
+  const photoTitleEl = document.getElementById("photo-title");
+  const photoCounterEl = document.getElementById("photo-counter");
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
+  const pickBtn = document.getElementById("pick-btn");
+  const removeBtn = document.getElementById("remove-btn");
   const submitBtn = document.getElementById("submit-vote");
-  const summaryEl = document.getElementById("selection-summary");
+  const top3ListEl = document.getElementById("top3-list");
 
   const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.SUPABASE_CONFIG || {};
   const hasSupabaseConfig =
-    SUPABASE_URL && !SUPABASE_URL.includes("YOUR_PROJECT") &&
-    SUPABASE_ANON_KEY && !SUPABASE_ANON_KEY.includes("YOUR_PUBLIC");
+    SUPABASE_URL &&
+    !SUPABASE_URL.includes("YOUR_PROJECT") &&
+    SUPABASE_ANON_KEY &&
+    !SUPABASE_ANON_KEY.includes("YOUR_PUBLIC");
 
   const supabase = hasSupabaseConfig
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     : null;
 
   let photos = [];
+  let currentIndex = 0;
   let selected = [];
 
   function setStatus(msg, type = "info") {
-    statusEl.textContent = msg;
+    statusEl.textContent = msg || "";
     statusEl.dataset.type = type;
   }
 
@@ -25,7 +34,9 @@
     const key = "cos_voter_token";
     let token = localStorage.getItem(key);
     if (!token) {
-      token = (crypto.randomUUID && crypto.randomUUID()) || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      token =
+        (crypto.randomUUID && crypto.randomUUID()) ||
+        `${Date.now()}-${Math.random().toString(16).slice(2)}`;
       localStorage.setItem(key, token);
     }
     return token;
@@ -33,106 +44,158 @@
 
   async function loadPhotos() {
     const res = await fetch("./assets/data/photos.json");
-    if (!res.ok) throw new Error("Could not load sample photos.");
+    if (!res.ok) throw new Error("Could not load photos.json");
     return res.json();
   }
 
-  function selectionRank(photoId) {
-    const idx = selected.indexOf(photoId);
-    return idx === -1 ? null : idx + 1;
+  function currentPhoto() {
+    return photos[currentIndex];
   }
 
-  function updateSummary() {
-    if (selected.length === 0) {
-      summaryEl.textContent = "No photos selected yet.";
+  function renderViewer() {
+    if (!photos.length) return;
+
+    const p = currentPhoto();
+    mainPhotoEl.src = p.image_url;
+    mainPhotoEl.alt = p.title;
+    photoTitleEl.textContent = p.title;
+    photoCounterEl.textContent = `Photo ${currentIndex + 1} of ${photos.length} • ID: ${p.id}`;
+
+    const idx = selected.indexOf(p.id);
+    if (idx >= 0) {
+      pickBtn.textContent = `Already in Top 3 (#${idx + 1})`;
+      pickBtn.disabled = true;
+      removeBtn.disabled = false;
+    } else {
+      pickBtn.textContent = "Add to Top 3";
+      pickBtn.disabled = selected.length >= 3;
+      removeBtn.disabled = true;
+    }
+  }
+
+  function slotHTML(rank, photo) {
+    if (!photo) {
+      return `
+        <span class="slot-rank">#${rank}</span>
+        <div class="slot-empty">No photo selected</div>
+      `;
+    }
+
+    return `
+      <span class="slot-rank">#${rank}</span>
+      <div class="slot-item">
+        <img src="${photo.image_url}" alt="${photo.title}" />
+        <p class="slot-title">${photo.title}</p>
+      </div>
+    `;
+  }
+
+  function renderTop3() {
+    const slots = top3ListEl.querySelectorAll(".slot");
+    slots.forEach((slot, i) => {
+      const id = selected[i];
+      const photo = photos.find((x) => x.id === id);
+      slot.innerHTML = slotHTML(i + 1, photo);
+    });
+  }
+
+  function prevPhoto() {
+    if (!photos.length) return;
+    currentIndex = (currentIndex - 1 + photos.length) % photos.length;
+    renderViewer();
+  }
+
+  function nextPhoto() {
+    if (!photos.length) return;
+    currentIndex = (currentIndex + 1) % photos.length;
+    renderViewer();
+  }
+
+  function pickCurrent() {
+    const p = currentPhoto();
+    if (!p) return;
+
+    if (selected.includes(p.id)) {
+      setStatus("This photo is already in your Top 3.", "warn");
       return;
     }
-    const lines = selected.map((id, i) => {
-      const p = photos.find((x) => x.id === id);
-      return `#${i + 1}: ${p ? p.title : id}`;
-    });
-    summaryEl.textContent = lines.join(" | ");
-  }
-
-  function renderGallery() {
-    galleryEl.innerHTML = photos.map((p) => {
-      const rank = selectionRank(p.id);
-      return `
-        <article class="card ${rank ? "selected" : ""}" data-photo-id="${p.id}">
-          <img src="${p.image_url}" alt="${p.title}" loading="lazy" />
-          <h3>${p.title}</h3>
-          <p>ID: ${p.id}</p>
-          ${rank ? `<span class="rank-badge">Pick #${rank}</span>` : ""}
-        </article>
-      `;
-    }).join("");
-
-    galleryEl.querySelectorAll(".card").forEach((card) => {
-      card.addEventListener("click", () => {
-        const photoId = card.dataset.photoId;
-        const existing = selected.indexOf(photoId);
-
-        if (existing >= 0) {
-          selected.splice(existing, 1);
-        } else {
-          if (selected.length >= 3) {
-            setStatus("You can only select 3 photos.", "warn");
-            return;
-          }
-          selected.push(photoId);
-        }
-
-        setStatus("", "info");
-        renderGallery();
-        updateSummary();
-      });
-    });
-  }
-
-  async function submitVote(payload) {
-    if (!supabase) {
-      throw new Error("Supabase is not configured in js/config.js");
+    if (selected.length >= 3) {
+      setStatus("You already selected 3 photos.", "warn");
+      return;
     }
 
-    const { data, error } = await supabase.from("votes").insert(payload).select("id").single();
-    if (error) throw error;
-    return data;
+    selected.push(p.id);
+    setStatus(`Added as #${selected.length}: ${p.title}`, "success");
+    renderViewer();
+    renderTop3();
+  }
+
+  function removeCurrent() {
+    const p = currentPhoto();
+    if (!p) return;
+
+    const idx = selected.indexOf(p.id);
+    if (idx === -1) {
+      setStatus("This photo is not in your Top 3.", "warn");
+      return;
+    }
+
+    selected.splice(idx, 1);
+    setStatus(`Removed: ${p.title}`, "success");
+    renderViewer();
+    renderTop3();
+  }
+
+  async function submitVote() {
+    if (selected.length !== 3) {
+      setStatus("Select exactly 3 photos before submitting.", "error");
+      return;
+    }
+
+    if (!supabase) {
+      setStatus("Supabase config missing in js/config.js", "error");
+      return;
+    }
+
+    const [favorite, second, third] = selected;
+    const voterToken = getVoterToken();
+
+    try {
+      const { error } = await supabase.from("votes").insert({
+        voter_token: voterToken,
+        favorite_id: favorite,
+        second_id: second,
+        third_id: third
+      });
+
+      if (error) throw error;
+
+      setStatus("Vote submitted successfully. Thank you!", "success");
+      submitBtn.disabled = true;
+      pickBtn.disabled = true;
+      removeBtn.disabled = true;
+      prevBtn.disabled = true;
+      nextBtn.disabled = true;
+    } catch (err) {
+      setStatus(err.message || "Could not submit vote.", "error");
+    }
   }
 
   async function init() {
     try {
       photos = await loadPhotos();
-      renderGallery();
-      updateSummary();
+      renderViewer();
+      renderTop3();
 
-      if (!hasSupabaseConfig) {
-        setStatus("Demo mode: configure Supabase in js/config.js to store real votes.", "warn");
-      }
+      prevBtn.addEventListener("click", prevPhoto);
+      nextBtn.addEventListener("click", nextPhoto);
+      pickBtn.addEventListener("click", pickCurrent);
+      removeBtn.addEventListener("click", removeCurrent);
+      submitBtn.addEventListener("click", submitVote);
 
-      submitBtn.addEventListener("click", async () => {
-        if (selected.length !== 3) {
-          setStatus("Select exactly 3 photos before submitting.", "error");
-          return;
-        }
-
-        const [favorite, second, third] = selected;
-        const voterToken = getVoterToken();
-
-        try {
-          await submitVote({
-            voter_token: voterToken,
-            favorite_id: favorite,
-            second_id: second,
-            third_id: third
-          });
-          setStatus("Vote submitted successfully.", "success");
-          selected = [];
-          renderGallery();
-          updateSummary();
-        } catch (err) {
-          const message = err?.message || "Could not submit vote.";
-          setStatus(message, "error");
-        }
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") prevPhoto();
+        if (e.key === "ArrowRight") nextPhoto();
       });
     } catch (err) {
       setStatus(err.message || "Error loading page.", "error");
