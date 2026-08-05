@@ -68,8 +68,8 @@
     const p = currentPhoto();
     mainPhotoEl.src = p.image_url;
     mainPhotoEl.alt = p.title;
-    photoTitleEl.textContent = p.title;
-    photoCounterEl.textContent = `Photo ${currentIndex + 1} of ${photos.length} • ID: ${p.id}`;
+    photoTitleEl.textContent = `Photo ${currentIndex + 1}`;
+    photoCounterEl.textContent = `Photo ${currentIndex + 1} of ${photos.length}`;;
 
     const idx = selected.indexOf(p.id);
     if (idx >= 0) {
