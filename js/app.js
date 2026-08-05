@@ -1,14 +1,20 @@
 (function () {
-  const statusEl = document.getElementById("status");
-  const mainPhotoEl = document.getElementById("main-photo");
-  const photoTitleEl = document.getElementById("photo-title");
-  const photoCounterEl = document.getElementById("photo-counter");
-  const prevBtn = document.getElementById("prev-btn");
-  const nextBtn = document.getElementById("next-btn");
-  const pickBtn = document.getElementById("pick-btn");
-  const removeBtn = document.getElementById("remove-btn");
-  const submitBtn = document.getElementById("submit-vote");
-  const top3ListEl = document.getElementById("top3-list");
+  function must(id) {
+    const el = document.getElementById(id);
+    if (!el) throw new Error(`UI error: missing element #${id} in index.html`);
+    return el;
+  }
+
+  let statusEl;
+  let mainPhotoEl;
+  let photoTitleEl;
+  let photoCounterEl;
+  let prevBtn;
+  let nextBtn;
+  let pickBtn;
+  let removeBtn;
+  let submitBtn;
+  let top3ListEl;
 
   const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.SUPABASE_CONFIG || {};
   const hasSupabaseConfig =
@@ -26,6 +32,7 @@
   let selected = [];
 
   function setStatus(msg, type = "info") {
+    if (!statusEl) return;
     statusEl.textContent = msg || "";
     statusEl.dataset.type = type;
   }
@@ -44,7 +51,7 @@
 
   async function loadPhotos() {
     const res = await fetch("./assets/data/photos.json");
-    if (!res.ok) throw new Error("Could not load photos.json");
+    if (!res.ok) throw new Error("Could not load ./assets/data/photos.json");
     return res.json();
   }
 
@@ -53,7 +60,10 @@
   }
 
   function renderViewer() {
-    if (!photos.length) return;
+    if (!photos.length) {
+      setStatus("No photos found in photos.json", "error");
+      return;
+    }
 
     const p = currentPhoto();
     mainPhotoEl.src = p.image_url;
@@ -92,6 +102,10 @@
 
   function renderTop3() {
     const slots = top3ListEl.querySelectorAll(".slot");
+    if (!slots.length) {
+      throw new Error('UI error: #top3-list has no ".slot" children');
+    }
+
     slots.forEach((slot, i) => {
       const id = selected[i];
       const photo = photos.find((x) => x.id === id);
@@ -181,8 +195,24 @@
     }
   }
 
+  function bindDom() {
+    // Fail-fast validation: throws explicit error if something is missing
+    statusEl = must("status");
+    mainPhotoEl = must("main-photo");
+    photoTitleEl = must("photo-title");
+    photoCounterEl = must("photo-counter");
+    prevBtn = must("prev-btn");
+    nextBtn = must("next-btn");
+    pickBtn = must("pick-btn");
+    removeBtn = must("remove-btn");
+    submitBtn = must("submit-vote");
+    top3ListEl = must("top3-list");
+  }
+
   async function init() {
     try {
+      bindDom();
+
       photos = await loadPhotos();
       renderViewer();
       renderTop3();
@@ -198,7 +228,13 @@
         if (e.key === "ArrowRight") nextPhoto();
       });
     } catch (err) {
-      setStatus(err.message || "Error loading page.", "error");
+      // If statusEl is not available yet, fallback to console + alert
+      if (statusEl) {
+        setStatus(err.message || "Error loading page.", "error");
+      } else {
+        console.error(err);
+        alert(err.message || "Error loading page.");
+      }
     }
   }
 
