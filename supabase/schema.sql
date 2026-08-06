@@ -11,14 +11,17 @@ create table if not exists votes (
   id uuid primary key default gen_random_uuid(),
   voter_token text not null,
   favorite_id text not null references photos(id) on delete restrict,
-  second_id text not null references photos(id) on delete restrict,
-  third_id text not null references photos(id) on delete restrict,
+  second_id text references photos(id) on delete restrict,
+  third_id text references photos(id) on delete restrict,
   created_at timestamptz not null default now(),
   constraint votes_unique_voter_token unique (voter_token),
   constraint votes_distinct_choices check (
-    favorite_id <> second_id
-    and favorite_id <> third_id
-    and second_id <> third_id
+    -- favorite siempre distinto de second cuando second no es null
+    (second_id is null or favorite_id <> second_id)
+    -- favorite siempre distinto de third cuando third no es null
+    and (third_id is null or favorite_id <> third_id)
+    -- second y third distintos cuando ambos existen
+    and (second_id is null or third_id is null or second_id <> third_id)
   )
 );
 
