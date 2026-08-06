@@ -139,6 +139,16 @@ body {
   margin: 0;
 }
 
+/* Mensajes grandes para éxito y aviso de voto */
+.status[data-type="success"],
+.status[data-type="warn"] {
+  margin-top: 1rem;
+  font-size: 1.6rem;
+  line-height: 1.3;
+  font-weight: 800;
+  text-align: center;
+}
+
 /* ---------- Foto principal ---------- */
 
 .photo-stage {
