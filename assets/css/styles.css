@@ -35,11 +35,10 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* ---------- Header superior (COS...) ---------- */
-/* Sin position fixed/sticky: se va con el scroll como cualquier bloque */
+/* ---------- Barra superior COS (reducida ~35%, NO fija) ---------- */
+/* Se mueve con el scroll como cualquier bloque, pero más pequeña */
 
 .topbar {
-  /* sin position especial, solo estilos visuales */
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
@@ -48,15 +47,15 @@ body {
 .topbar__inner {
   width: min(1400px, 98vw);
   margin: 0 auto;
-  padding: .9rem 0;
+  padding: .6rem 0;           /* altura muy reducida vs la original */
   display: flex;
   align-items: center;
-  gap: .85rem;
+  gap: .8rem;
 }
 
 .cos-logo {
-  width: 80px;
-  height: 80px;
+  width: 54px;               /* antes ~80–160px, ahora ~35% del tamaño grande */
+  height: 54px;
   object-fit: contain;
   flex: 0 0 auto;
 }
@@ -64,21 +63,21 @@ body {
 .topbar__text h1 {
   margin: 0;
   color: var(--black);
-  font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+  font-size: clamp(1.4rem, 2.2vw, 2rem);
   line-height: 1.1;
   font-weight: 800;
 }
 
 .topbar__text p {
-  margin: .3rem 0 0;
+  margin: .25rem 0 0;
   color: var(--muted);
-  font-size: .98rem;
+  font-size: .95rem;
 }
 
 /* Nav opcional del header (para results.html) */
 
 .topbar__nav {
-  margin-top: .45rem;
+  margin-top: .4rem;
   display: flex;
   gap: .9rem;
   font-size: .9rem;
@@ -121,7 +120,7 @@ body {
   padding: 1rem;
 }
 
-/* Panel “Your Top 3” normal (static): se mueve con el scroll igual que la foto */
+/* Panel “Your Top 3” normal: se mueve con el scroll igual que la foto */
 
 .sidebar {
   padding: 1rem;
@@ -379,8 +378,8 @@ button.success {
   }
 
   .cos-logo {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
   }
 
   .actions {
