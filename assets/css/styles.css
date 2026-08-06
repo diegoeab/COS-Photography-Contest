@@ -28,7 +28,7 @@ html {
 
 body {
   margin: 0;
-  /* Deja espacio para el header fijo */
+  /* Espacio para el header fijo */
   padding-top: 260px;
   font-family: var(--font-main);
   background: var(--bg);
@@ -37,10 +37,10 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* ---------- Header fijo arriba ---------- */
+/* ---------- Header fijo arriba (COS...) ---------- */
 
 .topbar {
-  position: fixed; /* Fijo al viewport */
+  position: fixed;      /* NO se mueve al hacer scroll */
   top: 0;
   left: 0;
   width: 100%;
@@ -80,7 +80,7 @@ body {
   font-size: 1.08rem;
 }
 
-/* Nav del header (sobre todo para results.html) */
+/* Nav del header (para results.html si lo usas) */
 .topbar__nav {
   margin-top: .55rem;
   display: flex;
@@ -100,7 +100,7 @@ body {
   text-decoration: underline;
 }
 
-/* ---------- Layout principal VOTING (index.html) ---------- */
+/* ---------- Layout principal (foto + Your Top 3) ---------- */
 
 .viewer-layout {
   width: min(1600px, 99vw);
@@ -119,11 +119,12 @@ body {
   box-shadow: var(--shadow);
 }
 
+/* Caja grande con la foto */
 .viewer {
   padding: 1rem;
 }
 
-/* Panel lateral no sticky para evitar movimiento raro */
+/* Panel Your Top 3: se mueve con la página (no sticky) */
 .sidebar {
   padding: 1rem;
   position: static;
@@ -315,7 +316,7 @@ button.success {
   margin-top: 1rem;
 }
 
-/* ---------- Layout RESULTADOS (results.html) ---------- */
+/* ---------- (Opcional) estilos de resultados si usas results.html ---------- */
 
 .results-main {
   width: min(1600px, 99vw);
