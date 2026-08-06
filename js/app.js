@@ -1,7 +1,13 @@
 (function () {
   function must(id) {
     const el = document.getElementById(id);
-    if (!el) throw new Error(`UI error: missing element #${id} in index.html`);
+
+    if (!el) {
+      throw new Error(
+        `UI error: missing element #${id} in index.html`
+      );
+    }
+
     return el;
   }
 
@@ -16,7 +22,11 @@
   let submitBtn;
   let top3ListEl;
 
-  const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.SUPABASE_CONFIG || {};
+  const {
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  } = window.SUPABASE_CONFIG || {};
+
   const hasSupabaseConfig =
     SUPABASE_URL &&
     !SUPABASE_URL.includes("YOUR_PROJECT") &&
@@ -24,7 +34,10 @@
     !SUPABASE_ANON_KEY.includes("YOUR_PUBLIC");
 
   const supabase = hasSupabaseConfig
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    ? window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      )
     : null;
 
   let photos = [];
@@ -34,27 +47,54 @@
   const VOTER_TOKEN_KEY = "cos_voter_token";
   const HAS_VOTED_KEY = "cos_has_voted";
 
-  function setStatus(msg, type = "info") {
+  function setStatus(message, type = "info") {
     if (!statusEl) return;
-    statusEl.textContent = msg || "";
+
+    statusEl.textContent = message || "";
     statusEl.dataset.type = type;
   }
 
   function getVoterToken() {
     let token = localStorage.getItem(VOTER_TOKEN_KEY);
+
     if (!token) {
       token =
-        (crypto.randomUUID && crypto.randomUUID()) ||
-        `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        window.crypto && window.crypto.randomUUID
+          ? window.crypto.randomUUID()
+          : `${Date.now()}-${Math.random()
+              .toString(16)
+              .slice(2)}`;
+
       localStorage.setItem(VOTER_TOKEN_KEY, token);
     }
+
     return token;
   }
 
   async function loadPhotos() {
-    const res = await fetch("./assets/data/photos.json");
-    if (!res.ok) throw new Error("Could not load ./assets/data/photos.json");
-    return res.json();
+    if (!supabase) {
+      throw new Error(
+        "Supabase config missing in js/config.js"
+      );
+    }
+
+    const { data, error } = await supabase
+      .from("photos")
+      .select("id, title, image_url")
+      .order("created_at", {
+        ascending: true
+      });
+
+    if (error) {
+      console.error(
+        "Error loading photos from Supabase:",
+        error
+      );
+
+      throw error;
+    }
+
+    return data || [];
   }
 
   function currentPhoto() {
@@ -63,160 +103,247 @@
 
   function renderViewer() {
     if (!photos.length) {
-      setStatus("No photos found in photos.json", "error");
+      setStatus(
+        "No photos found in Supabase.",
+        "error"
+      );
+
+      mainPhotoEl.removeAttribute("src");
+      photoTitleEl.textContent = "No photos available";
+      photoCounterEl.textContent = "";
+
       return;
     }
 
-    const p = currentPhoto();
-    mainPhotoEl.src = p.image_url;
-    mainPhotoEl.alt = "";
-    photoTitleEl.textContent = `Photo ${currentIndex + 1}`;
-    photoCounterEl.textContent = `Photo ${currentIndex + 1} of ${photos.length}`;
+    const photo = currentPhoto();
 
-    const idx = selected.indexOf(p.id);
-    if (idx >= 0) {
-      pickBtn.textContent = `Already in Top 3 (${idx + 1})`;
+    mainPhotoEl.src = photo.image_url;
+    mainPhotoEl.alt = photo.title || "Contest photo";
+
+    photoTitleEl.textContent =
+      photo.title || `Photo ${currentIndex + 1}`;
+
+    photoCounterEl.textContent =
+      `Photo ${currentIndex + 1} of ${photos.length}`;
+
+    const selectedIndex = selected.indexOf(photo.id);
+
+    if (selectedIndex >= 0) {
+      pickBtn.textContent =
+        `Already in Top 3 (${selectedIndex + 1})`;
+
       pickBtn.disabled = true;
       removeBtn.disabled = false;
     } else {
       pickBtn.textContent = "Add to Top 3";
-      // máximo 3 fotos seleccionadas
       pickBtn.disabled = selected.length >= 3;
       removeBtn.disabled = true;
     }
   }
 
   function slotHTML(rank, photo) {
+    const rankText =
+      rank === 1
+        ? "1st"
+        : rank === 2
+        ? "2nd"
+        : "3rd";
+
     if (!photo) {
       return `
-        <span class="slot-rank">${rank === 1 ? "1st" : rank === 2 ? "2nd" : "3rd"}</span>
+        <span class="slot-rank">${rankText}</span>
         <div class="slot-empty">No photo selected</div>
       `;
     }
 
     return `
-      <span class="slot-rank">${rank === 1 ? "1st" : rank === 2 ? "2nd" : "3rd"}</span>
+      <span class="slot-rank">${rankText}</span>
       <div class="slot-item">
-        <img src="${photo.image_url}" alt="" />
+        <img
+          src="${photo.image_url}"
+          alt="${photo.title || "Selected photo"}"
+        />
       </div>
     `;
   }
 
   function renderTop3() {
     const slots = top3ListEl.querySelectorAll(".slot");
+
     if (!slots.length) {
-      throw new Error('UI error: #top3-list has no ".slot" children');
+      throw new Error(
+        'UI error: #top3-list has no ".slot" children'
+      );
     }
 
-    slots.forEach((slot, i) => {
-      const id = selected[i];
-      const photo = photos.find((x) => x.id === id);
-      slot.innerHTML = slotHTML(i + 1, photo);
+    slots.forEach((slot, index) => {
+      const photoId = selected[index];
+
+      const photo = photos.find(
+        (item) => item.id === photoId
+      );
+
+      slot.innerHTML = slotHTML(index + 1, photo);
     });
   }
 
   function prevPhoto() {
     if (!photos.length) return;
-    currentIndex = (currentIndex - 1 + photos.length) % photos.length;
+
+    currentIndex =
+      (currentIndex - 1 + photos.length) %
+      photos.length;
+
     renderViewer();
   }
 
   function nextPhoto() {
     if (!photos.length) return;
-    currentIndex = (currentIndex + 1) % photos.length;
+
+    currentIndex =
+      (currentIndex + 1) % photos.length;
+
     renderViewer();
   }
 
   function pickCurrent() {
-    const p = currentPhoto();
-    if (!p) return;
+    const photo = currentPhoto();
 
-    if (selected.includes(p.id)) {
-      setStatus("This photo is already in your Top 3.", "warn");
+    if (!photo) return;
+
+    if (selected.includes(photo.id)) {
+      setStatus(
+        "This photo is already in your Top 3.",
+        "warn"
+      );
+
       return;
     }
+
     if (selected.length >= 3) {
-      setStatus("You already selected 3 photos.", "warn");
+      setStatus(
+        "You already selected 3 photos.",
+        "warn"
+      );
+
       return;
     }
 
-    selected.push(p.id);
+    selected.push(photo.id);
+
+    const position =
+      selected.length === 1
+        ? "1st"
+        : selected.length === 2
+        ? "2nd"
+        : "3rd";
+
     setStatus(
-      `Added as ${selected.length === 1 ? "1st" : selected.length === 2 ? "2nd" : "3rd"} photo.`,
+      `Added as ${position} photo.`,
       "success"
     );
+
     renderViewer();
     renderTop3();
   }
 
   function removeCurrent() {
-    const p = currentPhoto();
-    if (!p) return;
+    const photo = currentPhoto();
 
-    const idx = selected.indexOf(p.id);
-    if (idx === -1) {
-      setStatus("This photo is not in your Top 3.", "warn");
+    if (!photo) return;
+
+    const selectedIndex = selected.indexOf(photo.id);
+
+    if (selectedIndex === -1) {
+      setStatus(
+        "This photo is not in your Top 3.",
+        "warn"
+      );
+
       return;
     }
 
-    selected.splice(idx, 1);
-    setStatus("Photo removed from your Top 3.", "success");
+    selected.splice(selectedIndex, 1);
+
+    setStatus(
+      "Photo removed from your Top 3.",
+      "success"
+    );
+
     renderViewer();
     renderTop3();
   }
 
   async function submitVote() {
-    // Regla actual:
-    // - al menos 1 foto obligatoria
-    // - 2nd y 3rd opcionales (máximo 3 en total)
     if (selected.length < 1) {
-      setStatus("Select at least 1 photo before submitting.", "error");
+      setStatus(
+        "Select at least 1 photo before submitting.",
+        "error"
+      );
+
       return;
     }
+
     if (selected.length > 3) {
-      setStatus("You can select at most 3 photos.", "error");
+      setStatus(
+        "You can select at most 3 photos.",
+        "error"
+      );
+
       return;
     }
 
     if (!supabase) {
-      setStatus("Supabase config missing in js/config.js", "error");
+      setStatus(
+        "Supabase config missing in js/config.js",
+        "error"
+      );
+
       return;
     }
 
     const favorite = selected[0];
     const second = selected[1] || null;
     const third = selected[2] || null;
-
     const voterToken = getVoterToken();
 
-    try {
-      const payload = {
-        voter_token: voterToken,
-        favorite_id: favorite,
-        second_id: second,
-        third_id: third
-      };
+    const payload = {
+      voter_token: voterToken,
+      favorite_id: favorite,
+      second_id: second,
+      third_id: third
+    };
 
+    try {
       const { error } = await supabase
         .from("votes")
-        .upsert(payload, { onConflict: "voter_token" });
+        .upsert(payload, {
+          onConflict: "voter_token"
+        });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
-      // Marcamos que este navegador ya votó
       localStorage.setItem(HAS_VOTED_KEY, "1");
 
-      // Mensaje grande agradeciendo el voto
-      setStatus("Thanks for voting!", "success");
+      setStatus(
+        "Thanks for voting!",
+        "success"
+      );
 
-      // Bloqueamos acciones para evitar otro envío desde este navegador
       submitBtn.disabled = true;
       pickBtn.disabled = true;
       removeBtn.disabled = true;
       prevBtn.disabled = true;
       nextBtn.disabled = true;
-    } catch (err) {
-      setStatus(err.message || "Could not submit vote.", "error");
+    } catch (error) {
+      console.error("Error submitting vote:", error);
+
+      setStatus(
+        error.message || "Could not submit vote.",
+        "error"
+      );
     }
   }
 
@@ -233,43 +360,86 @@
     top3ListEl = must("top3-list");
   }
 
+  function disableVoting() {
+    submitBtn.disabled = true;
+    pickBtn.disabled = true;
+    removeBtn.disabled = true;
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+  }
+
   async function init() {
     try {
       bindDom();
 
-      const hasVoted = localStorage.getItem(HAS_VOTED_KEY) === "1";
+      const hasVoted =
+        localStorage.getItem(HAS_VOTED_KEY) === "1";
 
       photos = await loadPhotos();
+
       renderViewer();
       renderTop3();
 
-      // Si este navegador ya votó antes, lo mostramos y bloqueamos voto nuevo
       if (hasVoted) {
-        setStatus("You already voted.", "warn");
-        submitBtn.disabled = true;
-        pickBtn.disabled = true;
-        removeBtn.disabled = true;
-        prevBtn.disabled = true;
-        nextBtn.disabled = true;
-        return; // no registramos eventos de click
+        setStatus(
+          "You already voted.",
+          "warn"
+        );
+
+        disableVoting();
+
+        return;
       }
 
-      prevBtn.addEventListener("click", prevPhoto);
-      nextBtn.addEventListener("click", nextPhoto);
-      pickBtn.addEventListener("click", pickCurrent);
-      removeBtn.addEventListener("click", removeCurrent);
-      submitBtn.addEventListener("click", submitVote);
+      prevBtn.addEventListener(
+        "click",
+        prevPhoto
+      );
 
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowLeft") prevPhoto();
-        if (e.key === "ArrowRight") nextPhoto();
-      });
-    } catch (err) {
+      nextBtn.addEventListener(
+        "click",
+        nextPhoto
+      );
+
+      pickBtn.addEventListener(
+        "click",
+        pickCurrent
+      );
+
+      removeBtn.addEventListener(
+        "click",
+        removeCurrent
+      );
+
+      submitBtn.addEventListener(
+        "click",
+        submitVote
+      );
+
+      document.addEventListener(
+        "keydown",
+        (event) => {
+          if (event.key === "ArrowLeft") {
+            prevPhoto();
+          }
+
+          if (event.key === "ArrowRight") {
+            nextPhoto();
+          }
+        }
+      );
+    } catch (error) {
+      console.error(error);
+
       if (statusEl) {
-        setStatus(err.message || "Error loading page.", "error");
+        setStatus(
+          error.message || "Error loading page.",
+          "error"
+        );
       } else {
-        console.error(err);
-        alert(err.message || "Error loading page.");
+        alert(
+          error.message || "Error loading page."
+        );
       }
     }
   }
