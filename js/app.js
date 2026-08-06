@@ -78,6 +78,7 @@
       removeBtn.disabled = false;
     } else {
       pickBtn.textContent = "Add to Top 3";
+      // máximo 3 fotos seleccionadas
       pickBtn.disabled = selected.length >= 3;
       removeBtn.disabled = true;
     }
@@ -163,8 +164,15 @@
   }
 
   async function submitVote() {
-    if (selected.length !== 3) {
-      setStatus("Select exactly 3 photos before submitting.", "error");
+    // NUEVA REGLA:
+    // - al menos 1 foto (1st) obligatoria
+    // - 2nd y 3rd opcionales (máximo 3 en total)
+    if (selected.length < 1) {
+      setStatus("Select at least 1 photo before submitting.", "error");
+      return;
+    }
+    if (selected.length > 3) {
+      setStatus("You can select at most 3 photos.", "error");
       return;
     }
 
@@ -173,7 +181,10 @@
       return;
     }
 
-    const [favorite, second, third] = selected;
+    const favorite = selected[0];
+    const second = selected[1] || null;
+    const third = selected[2] || null;
+
     const voterToken = getVoterToken();
 
     try {
