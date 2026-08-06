@@ -40,7 +40,7 @@ body {
 /* ---------- Header fijo arriba (COS...) ---------- */
 
 .topbar {
-  position: fixed;      /* NO se mueve al hacer scroll */
+  position: fixed;      /* Fijo al viewport: no se mueve al hacer scroll */
   top: 0;
   left: 0;
   width: 100%;
@@ -80,7 +80,7 @@ body {
   font-size: 1.08rem;
 }
 
-/* Nav del header (para results.html si lo usas) */
+/* Nav opcional del header (para results.html) */
 .topbar__nav {
   margin-top: .55rem;
   display: flex;
@@ -124,10 +124,11 @@ body {
   padding: 1rem;
 }
 
-/* Panel Your Top 3: se mueve con la página (no sticky) */
+/* Panel “Your Top 3” como sticky (como en tu repo original) */
 .sidebar {
   padding: 1rem;
-  position: static;
+  position: sticky;
+  top: 92px;
 }
 
 /* ---------- Cabeceras internas ---------- */
@@ -316,7 +317,7 @@ button.success {
   margin-top: 1rem;
 }
 
-/* ---------- (Opcional) estilos de resultados si usas results.html ---------- */
+/* ---------- Layout RESULTADOS (results.html, si lo usas) ---------- */
 
 .results-main {
   width: min(1600px, 99vw);
@@ -359,7 +360,8 @@ button.success {
   }
 
   .sidebar {
-    position: static;
+    position: sticky;
+    top: 92px;
   }
 
   .photo-stage {
