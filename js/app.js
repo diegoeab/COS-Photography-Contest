@@ -31,6 +31,9 @@
   let currentIndex = 0;
   let selected = [];
 
+  const VOTER_TOKEN_KEY = "cos_voter_token";
+  const HAS_VOTED_KEY = "cos_has_voted";
+
   function setStatus(msg, type = "info") {
     if (!statusEl) return;
     statusEl.textContent = msg || "";
@@ -38,13 +41,12 @@
   }
 
   function getVoterToken() {
-    const key = "cos_voter_token";
-    let token = localStorage.getItem(key);
+    let token = localStorage.getItem(VOTER_TOKEN_KEY);
     if (!token) {
       token =
         (crypto.randomUUID && crypto.randomUUID()) ||
         `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-      localStorage.setItem(key, token);
+      localStorage.setItem(VOTER_TOKEN_KEY, token);
     }
     return token;
   }
@@ -164,8 +166,8 @@
   }
 
   async function submitVote() {
-    // NUEVA REGLA:
-    // - al menos 1 foto (1st) obligatoria
+    // Regla actual:
+    // - al menos 1 foto obligatoria
     // - 2nd y 3rd opcionales (máximo 3 en total)
     if (selected.length < 1) {
       setStatus("Select at least 1 photo before submitting.", "error");
@@ -201,7 +203,13 @@
 
       if (error) throw error;
 
-      setStatus("Vote submitted successfully. Thank you!", "success");
+      // Marcamos que este navegador ya votó
+      localStorage.setItem(HAS_VOTED_KEY, "1");
+
+      // Mensaje grande agradeciendo el voto
+      setStatus("Thanks for voting!", "success");
+
+      // Bloqueamos acciones para evitar otro envío desde este navegador
       submitBtn.disabled = true;
       pickBtn.disabled = true;
       removeBtn.disabled = true;
@@ -229,9 +237,22 @@
     try {
       bindDom();
 
+      const hasVoted = localStorage.getItem(HAS_VOTED_KEY) === "1";
+
       photos = await loadPhotos();
       renderViewer();
       renderTop3();
+
+      // Si este navegador ya votó antes, lo mostramos y bloqueamos voto nuevo
+      if (hasVoted) {
+        setStatus("You already voted.", "warn");
+        submitBtn.disabled = true;
+        pickBtn.disabled = true;
+        removeBtn.disabled = true;
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        return; // no registramos eventos de click
+      }
 
       prevBtn.addEventListener("click", prevPhoto);
       nextBtn.addEventListener("click", nextPhoto);
