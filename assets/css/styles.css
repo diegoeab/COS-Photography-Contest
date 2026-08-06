@@ -35,30 +35,28 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* ---------- Header arriba (COS...) ---------- */
-/* Se queda pegado en el top cuando scrolleas, sin hacks de padding-top */
+/* ---------- Header superior (COS...) ---------- */
+/* Sin position fixed/sticky: se va con el scroll como cualquier bloque */
 
 .topbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+  /* sin position especial, solo estilos visuales */
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
 }
 
 .topbar__inner {
-  width: min(1600px, 99vw);
+  width: min(1400px, 98vw);
   margin: 0 auto;
-  padding: 1.35rem 0;
+  padding: .9rem 0;
   display: flex;
   align-items: center;
-  gap: 1.1rem;
+  gap: .85rem;
 }
 
 .cos-logo {
-  width: 160px;
-  height: 160px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
   flex: 0 0 auto;
 }
@@ -66,24 +64,24 @@ body {
 .topbar__text h1 {
   margin: 0;
   color: var(--black);
-  font-size: clamp(1.8rem, 3vw, 2.8rem);
-  line-height: 1.05;
+  font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+  line-height: 1.1;
   font-weight: 800;
 }
 
 .topbar__text p {
-  margin: .4rem 0 0;
+  margin: .3rem 0 0;
   color: var(--muted);
-  font-size: 1.08rem;
+  font-size: .98rem;
 }
 
 /* Nav opcional del header (para results.html) */
 
 .topbar__nav {
-  margin-top: .55rem;
+  margin-top: .45rem;
   display: flex;
-  gap: 1rem;
-  font-size: .98rem;
+  gap: .9rem;
+  font-size: .9rem;
 }
 
 .topbar__nav a {
@@ -123,7 +121,7 @@ body {
   padding: 1rem;
 }
 
-/* Panel “Your Top 3” se mueve con la página (static) */
+/* Panel “Your Top 3” normal (static): se mueve con el scroll igual que la foto */
 
 .sidebar {
   padding: 1rem;
@@ -377,12 +375,12 @@ button.success {
 
 @media (max-width: 640px) {
   .topbar__inner {
-    align-items: center;
+    align-items: flex-start;
   }
 
   .cos-logo {
-    width: 120px;
-    height: 120px;
+    width: 64px;
+    height: 64px;
   }
 
   .actions {
