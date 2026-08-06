@@ -12,7 +12,7 @@
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // Cambia este valor (mínimo 12+ caracteres)
-  const ADMIN_PASSWORD = "CAMBIA_ESTA_PASSWORD_SUPER_SEGURA";
+  const ADMIN_PASSWORD = "Parangaricutirimicuaro";
 
   function setStatus(el, msg, type = "info") {
     el.textContent = msg || "";
