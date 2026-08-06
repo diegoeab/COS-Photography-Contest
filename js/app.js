@@ -29,8 +29,8 @@
 
   const hasSupabaseConfig =
     SUPABASE_URL &&
-    !SUPABASE_URL.includes("YOUR_PROJECT") &&
     SUPABASE_ANON_KEY &&
+    !SUPABASE_URL.includes("YOUR_PROJECT") &&
     !SUPABASE_ANON_KEY.includes("YOUR_PUBLIC");
 
   const supabase = hasSupabaseConfig
@@ -80,7 +80,7 @@
 
     const { data, error } = await supabase
       .from("photos")
-      .select("id, title, image_url")
+      .select("id, image_url")
       .order("created_at", {
         ascending: true
       });
@@ -109,8 +109,12 @@
       );
 
       mainPhotoEl.removeAttribute("src");
-      photoTitleEl.textContent = `Photo ${currentIndex + 1}`;
+      mainPhotoEl.alt = "";
+      photoTitleEl.textContent = "No photos available";
       photoCounterEl.textContent = "";
+
+      pickBtn.disabled = true;
+      removeBtn.disabled = true;
 
       return;
     }
@@ -118,10 +122,10 @@
     const photo = currentPhoto();
 
     mainPhotoEl.src = photo.image_url;
-    mainPhotoEl.alt = photo.title || "Contest photo";
+    mainPhotoEl.alt = `Photo ${currentIndex + 1}`;
 
     photoTitleEl.textContent =
-      photo.title || `Photo ${currentIndex + 1}`;
+      `Photo ${currentIndex + 1}`;
 
     photoCounterEl.textContent =
       `Photo ${currentIndex + 1} of ${photos.length}`;
@@ -139,6 +143,18 @@
       pickBtn.disabled = selected.length >= 3;
       removeBtn.disabled = true;
     }
+
+    mainPhotoEl.onerror = function () {
+      console.error(
+        "Could not load image:",
+        photo.image_url
+      );
+
+      setStatus(
+        "Error loading image.",
+        "error"
+      );
+    };
   }
 
   function slotHTML(rank, photo) {
@@ -152,7 +168,9 @@
     if (!photo) {
       return `
         <span class="slot-rank">${rankText}</span>
-        <div class="slot-empty">No photo selected</div>
+        <div class="slot-empty">
+          No photo selected
+        </div>
       `;
     }
 
@@ -161,14 +179,15 @@
       <div class="slot-item">
         <img
           src="${photo.image_url}"
-          alt="${photo.title || "Selected photo"}"
+          alt="Selected photo"
         />
       </div>
     `;
   }
 
   function renderTop3() {
-    const slots = top3ListEl.querySelectorAll(".slot");
+    const slots =
+      top3ListEl.querySelectorAll(".slot");
 
     if (!slots.length) {
       throw new Error(
@@ -183,7 +202,8 @@
         (item) => item.id === photoId
       );
 
-      slot.innerHTML = slotHTML(index + 1, photo);
+      slot.innerHTML =
+        slotHTML(index + 1, photo);
     });
   }
 
@@ -252,7 +272,8 @@
 
     if (!photo) return;
 
-    const selectedIndex = selected.indexOf(photo.id);
+    const selectedIndex =
+      selected.indexOf(photo.id);
 
     if (selectedIndex === -1) {
       setStatus(
@@ -302,16 +323,13 @@
       return;
     }
 
-    const favorite = selected[0];
-    const second = selected[1] || null;
-    const third = selected[2] || null;
     const voterToken = getVoterToken();
 
     const payload = {
       voter_token: voterToken,
-      favorite_id: favorite,
-      second_id: second,
-      third_id: third
+      favorite_id: selected[0],
+      second_id: selected[1] || null,
+      third_id: selected[2] || null
     };
 
     try {
@@ -325,23 +343,26 @@
         throw error;
       }
 
-      localStorage.setItem(HAS_VOTED_KEY, "1");
+      localStorage.setItem(
+        HAS_VOTED_KEY,
+        "1"
+      );
 
       setStatus(
         "Thanks for voting!",
         "success"
       );
 
-      submitBtn.disabled = true;
-      pickBtn.disabled = true;
-      removeBtn.disabled = true;
-      prevBtn.disabled = true;
-      nextBtn.disabled = true;
+      disableVoting();
     } catch (error) {
-      console.error("Error submitting vote:", error);
+      console.error(
+        "Error submitting vote:",
+        error
+      );
 
       setStatus(
-        error.message || "Could not submit vote.",
+        error.message ||
+          "Could not submit vote.",
         "error"
       );
     }
@@ -373,7 +394,9 @@
       bindDom();
 
       const hasVoted =
-        localStorage.getItem(HAS_VOTED_KEY) === "1";
+        localStorage.getItem(
+          HAS_VOTED_KEY
+        ) === "1";
 
       photos = await loadPhotos();
 
@@ -418,7 +441,7 @@
 
       document.addEventListener(
         "keydown",
-        (event) => {
+        function (event) {
           if (event.key === "ArrowLeft") {
             prevPhoto();
           }
@@ -433,12 +456,14 @@
 
       if (statusEl) {
         setStatus(
-          error.message || "Error loading page.",
+          error.message ||
+            "Error loading page.",
           "error"
         );
       } else {
         alert(
-          error.message || "Error loading page."
+          error.message ||
+            "Error loading page."
         );
       }
     }
