@@ -28,8 +28,6 @@ html {
 
 body {
   margin: 0;
-  /* Espacio para el header fijo */
-  padding-top: 260px;
   font-family: var(--font-main);
   background: var(--bg);
   color: var(--text);
@@ -37,13 +35,12 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* ---------- Header fijo arriba (COS...) ---------- */
+/* ---------- Header arriba (COS...) ---------- */
+/* Se queda pegado en el top cuando scrolleas, sin hacks de padding-top */
 
 .topbar {
-  position: fixed;      /* Fijo al viewport: no se mueve al hacer scroll */
+  position: sticky;
   top: 0;
-  left: 0;
-  width: 100%;
   z-index: 1000;
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(10px);
@@ -81,6 +78,7 @@ body {
 }
 
 /* Nav opcional del header (para results.html) */
+
 .topbar__nav {
   margin-top: .55rem;
   display: flex;
@@ -120,15 +118,16 @@ body {
 }
 
 /* Caja grande con la foto */
+
 .viewer {
   padding: 1rem;
 }
 
-/* Panel “Your Top 3” como sticky (como en tu repo original) */
+/* Panel “Your Top 3” se mueve con la página (static) */
+
 .sidebar {
   padding: 1rem;
-  position: sticky;
-  top: 92px;
+  position: static;
 }
 
 /* ---------- Cabeceras internas ---------- */
@@ -360,8 +359,7 @@ button.success {
   }
 
   .sidebar {
-    position: sticky;
-    top: 92px;
+    position: static;
   }
 
   .photo-stage {
@@ -378,10 +376,6 @@ button.success {
 }
 
 @media (max-width: 640px) {
-  body {
-    padding-top: 200px; /* header algo más bajo en móvil */
-  }
-
   .topbar__inner {
     align-items: center;
   }
