@@ -109,7 +109,7 @@
       );
 
       mainPhotoEl.removeAttribute("src");
-      photoTitleEl.textContent = "No photos available";
+      photoTitleEl.textContent = `Photo ${currentIndex + 1}`;
       photoCounterEl.textContent = "";
 
       return;
