@@ -16,11 +16,8 @@ create table if not exists votes (
   created_at timestamptz not null default now(),
   constraint votes_unique_voter_token unique (voter_token),
   constraint votes_distinct_choices check (
-    -- favorite siempre distinto de second cuando second no es null
     (second_id is null or favorite_id <> second_id)
-    -- favorite siempre distinto de third cuando third no es null
     and (third_id is null or favorite_id <> third_id)
-    -- second y third distintos cuando ambos existen
     and (second_id is null or third_id is null or second_id <> third_id)
   )
 );
@@ -45,3 +42,27 @@ select
 from photos p
 left join score_rows s on s.photo_id = p.id
 group by p.id, p.title;
+
+alter table photos enable row level security;
+alter table votes enable row level security;
+
+drop policy if exists "photos_select_public" on photos;
+create policy "photos_select_public"
+on photos
+for select
+to anon, authenticated
+using (true);
+
+drop policy if exists "votes_insert_public" on votes;
+create policy "votes_insert_public"
+on votes
+for insert
+to anon, authenticated
+with check (true);
+
+drop policy if exists "votes_select_public" on votes;
+create policy "votes_select_public"
+on votes
+for select
+to anon, authenticated
+using (true);
