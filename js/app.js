@@ -44,8 +44,8 @@
   let currentIndex = 0;
   let selected = [];
 
-  const VOTER_TOKEN_KEY = "cos_voter_token";
-  const HAS_VOTED_KEY = "cos_has_voted";
+  const VOTER_TOKEN_KEY = "cos_summer_voter_token";
+  const HAS_VOTED_KEY = "cos_summer_has_voted";
 
   function setStatus(message, type = "info") {
     if (!statusEl) return;
