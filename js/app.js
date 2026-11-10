@@ -43,6 +43,7 @@
   let photos = [];
   let currentIndex = 0;
   let selected = [];
+  let votingClosed = false;
 
   const VOTER_TOKEN_KEY = "cos_summer_voter_token";
   const HAS_VOTED_KEY = "cos_summer_has_voted";
@@ -141,6 +142,11 @@
     } else {
       pickBtn.textContent = "Add to Top 3";
       pickBtn.disabled = selected.length >= 3;
+      removeBtn.disabled = true;
+    }
+
+    if (votingClosed) {
+      pickBtn.disabled = true;
       removeBtn.disabled = true;
     }
 
@@ -381,12 +387,12 @@
     top3ListEl = must("top3-list");
   }
 
+  // Voting is closed after a vote, but browsing (prev/next) stays enabled.
   function disableVoting() {
+    votingClosed = true;
     submitBtn.disabled = true;
     pickBtn.disabled = true;
     removeBtn.disabled = true;
-    prevBtn.disabled = true;
-    nextBtn.disabled = true;
   }
 
   async function init() {
@@ -400,20 +406,6 @@
 
       photos = await loadPhotos();
 
-      renderViewer();
-      renderTop3();
-
-      if (hasVoted) {
-        setStatus(
-          "You already voted.",
-          "warn"
-        );
-
-        disableVoting();
-
-        return;
-      }
-
       prevBtn.addEventListener(
         "click",
         prevPhoto
@@ -423,6 +415,35 @@
         "click",
         nextPhoto
       );
+
+      document.addEventListener(
+        "keydown",
+        function (event) {
+          if (event.key === "ArrowLeft") {
+            prevPhoto();
+          }
+
+          if (event.key === "ArrowRight") {
+            nextPhoto();
+          }
+        }
+      );
+
+      if (hasVoted) {
+        disableVoting();
+      }
+
+      renderViewer();
+      renderTop3();
+
+      if (hasVoted) {
+        setStatus(
+          "You already voted. You can still browse the photos.",
+          "warn"
+        );
+
+        return;
+      }
 
       pickBtn.addEventListener(
         "click",
@@ -437,19 +458,6 @@
       submitBtn.addEventListener(
         "click",
         submitVote
-      );
-
-      document.addEventListener(
-        "keydown",
-        function (event) {
-          if (event.key === "ArrowLeft") {
-            prevPhoto();
-          }
-
-          if (event.key === "ArrowRight") {
-            nextPhoto();
-          }
-        }
       );
     } catch (error) {
       console.error(error);
